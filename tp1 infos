@@ -1,3 +1,8 @@
+
+let rec maximum = function
+  |[]->failwith "empty list"
+  |[q]->q
+  |q::t-> max (q) (maximum t);;
 (* exercice 2 (suite fibo)*)
 
 let mem_fibo = Hashtbl.create 997;;
@@ -62,11 +67,70 @@ let infixe_ b_tree =
     |Vide->acc
     |N(q,g,d)->aux (q::(aux acc d)) g
   in aux [] b_tree;;
-
+  
+  
 (*exercice 4*)
 
-type arbre = Noeud of int * arbre list;;
+type arbre = Noeud of int * arbre list;; 
+
+
+let rec vers_lst = function
+  |Vide->[]
+  |N(x,g,d)->Noeud (x,vers_lst g):: vers_lst d;;
+
+
+let arbre_alea n = 
+  let a = arbre_bin_alea (n-1) in 
+  Noeud(n-1,vers_lst a);;
+
+
+let rec taille arbre = 
+  let rec somme= function
+    |[]->0
+    |q::t->q+somme t
+  in let Noeud(n,lst) = arbre in 1 + somme (List.map taille lst);; 
+
+(*correction*)
+
+let rec taille1 (Noeud(x,lst)) = match lst with
+  |[]->1
+  |q::t->taille1 q + taille1 (Noeud(x,t)) ;;
+
+(*prend une liste d'arbre et calcule la somme des tailles*)
+let rec taille2 arbre = 
+  let rec aux = function 
+    |[]->0
+    |Noeud(x,lst)::t->1 + aux lst+ aux t 
+  in aux [arbre];;
+
+let rec taille3 (Noeud(x,lst)) =
+  1 + List.fold_left (fun a b-> a + b) 0 (List.map taille3 lst);; 
+
+let rec taille4 (Noeud(x,lst))=
+  1 + List.fold_left (fun a b -> a + taille3 b) 0 (lst) ;;
+
+
+let rec hauteur0 (Noeud(x,lst))=match lst with 
+  |[]->0
+  |q::t-> max (1 + hauteur0 q )(hauteur0 (Noeud(x,t)));;
   
-  
-  
-  
+            
+let suffix arbre= 
+  let rec aux  acc = function
+    |[]->acc
+    |Noeud(x,q)::t-> aux (x:: aux acc t) q
+  in aux [][arbre];;
+
+
+      
+let rec bin_vers_arbre  =function
+  |N(x,Vide,Vide)->Noeud(x,[])
+  |N(x,g,Vide)|N(x,Vide,g) -> Noeud(x,[bin_vers_arbre g])
+  |N(x,g,d)-> Noeud(x,[bin_vers_arbre g;bin_vers_arbre d]);;
+    
+    
+    
+    
+    
+    
+    
