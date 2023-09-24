@@ -1,0 +1,72 @@
+(* exercice 2 (suite fibo)*)
+
+let mem_fibo = Hashtbl.create 997;;
+
+let remplir_fib n = 
+  let lst = ref [] in 
+  let rec fibo n = 
+    try Hashtbl.find mem_fibo n with
+    |Not_found->let res = if n<2 then 1 else fibo (n-1) + fibo (n-2)
+        in Hashtbl.add mem_fibo n res;res
+  in for i = 0 to n do (lst:= fibo i::(!lst)) done;List.rev !lst;; 
+  
+
+(*exerciece 3 (arbre binaire)*)
+type arbre_bin =Vide|N of int * arbre_bin * arbre_bin;;
+
+
+
+
+Random.self_init();;
+
+let arbre_bin_alea n = 
+  let lg = Random.int n in
+  let rec aux k l = match l with
+    |0->Vide 
+    |l-> let r = Random.int l in N(k+r,aux k r,aux (k+r+1) (l-r-1));
+  in N(lg,aux 0 lg,aux (lg+1) (n-1-lg));;
+
+let rec taille_bin = function
+  |Vide->0
+  |N(_,g,d)-> 1 + taille_bin g + taille_bin d;;
+
+let rec hauteur_bin = function
+  |Vide-> -1
+  |N(_,g,d)-> 1 + max(taille_bin g)(taille_bin d);; 
+
+
+let rec affiche_prefixe = function
+  |Vide-> ()
+  |N(q,Vide,Vide)-> print_int q
+  |N(q,g,d)->print_int q;affiche_prefixe g ;affiche_prefixe d;; 
+
+
+let rec infixe =function
+  |Vide->[]
+  |N(q,g,d)->infixe g @ (q::(infixe d));;
+
+
+(*faux, pas de programamtion imppérative *)
+let infixe b_tree = 
+  let lst = ref [] in 
+  let rec aux =function
+    | Vide-> ()
+    |N(q,d,g)-> aux d; lst:= q::(!lst) ;aux g
+  in aux b_tree;List.rev (!lst);;      
+(*corrige*)
+(*parcours infixe a l'inverse en mettant
+  dans la liste acc le dernier au premier element*)
+
+let infixe_ b_tree = 
+  let rec aux acc = function 
+    |Vide->acc
+    |N(q,g,d)->aux (q::(aux acc d)) g
+  in aux [] b_tree;;
+
+(*exercice 4*)
+
+type arbre = Noeud of int * arbre list;;
+  
+  
+  
+  
