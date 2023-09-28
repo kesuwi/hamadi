@@ -132,5 +132,204 @@ let rec bin_vers_arbre  =function
     
     
     
+    (*exercice 5*)
+
+let tab_alea k n =
+  let tab = Array.make n 0 in 
+  for i = 0 to n-1 do (
+    tab.(i)<- Random.int k
+  )done;
+  tab;;
+
+
+let init n f = 
+  let tab= Array.make n (f 0) in 
+  for i=1 to n-1 do (
+    tab.(i)<- f i 
+  )done;
+  tab;;
+
+
+let minimum tab =
+  let min = ref tab.(0) in
+  for i = 1 to Array.length tab -1 do (
+    if tab.(i)< !min then min:= tab.(i) 
+  )done;
+  !min;;
+
+(*correstion*)
+
+
+let corr_minimum tab = 
+  let n = Array.length tab in
+  if n=0 then failwith "tableau vide" else
+    let min = ref tab.(0) in
+    for i=1 to n-1 do(
+      if tab.(i)< !min then min:=tab.(i)
+    )done;
+    !min;; 
+
+
+
+let tri_insertion tab = 
+  let n = Array.length tab in
+  if n=0 then failwith "table vide" else
+    for i = 1 to n-1 do
+      begin
+        let j = ref i and x = tab.(i) in
+        while !j>0 && x<tab.(!j-1) 
+        do
+          (tab.(!j)<-tab.(!j-1);decr j;)
+        done; 
+        tab.(!j)<-x;
+      end
+    done;;
+      
+  
+      
+let knuth tab = 
+  let n = Array.length tab in 
+  if n=0 then failwith "table vide" else
+    for i = n-1 downto 1 do (
+      let k = Random.int i+1 in let x = tab.(k)in 
+      (tab.(k)<-tab.(i);tab.(i)<-x)
+    )done;;
+      
     
+let rec  fold_left f a tab =
+  let sol = ref a and n = Array.length tab in 
+  for i=0 to n-1 do( sol := f !sol tab.(i))done;!sol;;
+  
+(*exercice 6*)
+
+let rec power a = function
+  |0->1
+  |1->a
+  |b->a * power a (b-1);;
+
+let rec sous_convertir = function
+  |[]->[] 
+  |t::q-> let lst = ref [] and l = ref t in 
+      while !l <> 0 do 
+        (lst := (!l mod 10)::(!lst);l := !l / 10) 
+      done; !(lst)@ sous_convertir q;;
+
+  
+let convertir lst = let n = List.length lst   in if n=0 then failwith "liste vide" else 
+    let rec aux k = function 
+      |[]->0
+      |t::q-> ( t * (power (10) (k-1) ) )+ aux (k-1) q 
+    in aux (n-1) lst;;
+
+
+(*correction*) 
+
+let convertir lst = 
+  let rec 
+    to_chiffre = function
+    |[]->[]
+    |q::t when q<10-> q::(to_chiffre t)
+    |q::t-> to_chiffre (q / 10::q mod 10::t) 
+  and 
+    to_nbr acc  = function 
+    |[]-> acc
+    |t::q-> to_nbr (10*acc +t) q
+  in to_nbr 0 (to_chiffre lst);;
+  
+
+let convertir lst = 
+  let rec 
+    to_chiffre= function
+    |[]->[]
+    |x::t when x < 10 -> x::(to_chiffre t)
+    |x::t ->  to_chiffre (x/10 :: x mod 10::t)
+  and
+    to_nbr acc = function
+    |[]->acc
+    |x::t-> to_nbr (10*acc +x) t
+  in to_nbr (0) (to_chiffre lst);;
+
+  
+(*exercice 7*)
+
+  
+type symp = I of int | Op of (int -> int -> int) and expre = symp list;;
+
+let postfixe s_lst = 
+  let s = Stack.create () in 
+  let rec solve = function
+    |[]-> Stack.pop s
+    |I n::t -> Stack.push n s; solve t 
+    |Op f::t ->let a = Stack.pop s in let  b =Stack.pop s in
+        Stack.push (f b a) s;solve t
+  in solve s_lst;;
+
+
+(*exercice 8*)
+
+(*conversion arbre générique<->arbre binaire*)
+
+type arbre_bin = Vide|N of int* arbre_bin * arbre_bin;;
+type arbre = Noeud of int * arbre list;;
+
+let alea  n = 
+  let rec aux k= function
+    |0->Vide
+    |n-> let l = Random.int n in Node(k+l,aux k l,aux (k+l+1) (n-l-1))
+  in aux 0 n;;
+
+
+let fonction_vers_arbre arbre = 
+  let rec aux  = function
+    |[]->Vide
+    |Noeud(n,t)::r-> N(n,aux t,aux r)
+  in aux [arbre];;
+  
+  
+  
+let real_height = function
+  |Vide-> -1
+  |N(n,g,d)-> max (1 + real_height g) (rea_height d);;
+
+
+
+let real_root_arity = function
+  |Vide-> failwith "arbre vide"
+  |N(_,g,_)-> let rec aux = function
+      |Vide->0
+      |N(_,_,d)-> 1 + aux d
+      in aux g;;
+    
+    
+    
+    
+    
+    
+    
+    
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
