@@ -1,0 +1,514 @@
+#include<stdio.h>
+#include<math.h>
+#include<stdlib.h>
+#include<stdbool.h>
+#include<time.h>
+#include<assert.h>
+
+
+// EXERCICE 1
+int pgcd (int a ,int b){
+    if (b==0)
+        return a;
+    else {
+        if (a>b)
+            return pgcd(b,a%b);
+        else
+            return pgcd(a, b%a);
+    }
+}
+
+// correction
+
+int c_pgcd(int a, int b){
+    if(b==0)
+        return a;
+    else
+        return pgcd(b,a%b);
+}
+
+float somme (int n) {
+float s= 0;
+for(int k=1;k <= n;k++ )
+    s= s + pow(k,-2);
+return s;
+}
+
+//correction
+
+float c_somme (int n ){
+float s=0;
+for (int k = 1 ;k<=n; ++k)
+    s+= 1.0/(k*k);
+return s;
+}
+
+
+int seuil (int n){
+int c=0;
+int s=1;
+while(s < n){s=s*2;c++;}
+return c;
+}
+
+
+//EXERCICE 2
+
+int maximum(int tab[], int len){
+assert(len >0);
+int max = tab[0];
+for(int i=1;i<len;++i)
+    if(tab[i]>max)
+        max = tab[i];
+
+return max;;
+}
+
+int i_maximum (int tab[],int len){
+assert(len >0);
+int i_max= 0;
+for(int i=1;i<len;++i)
+    if(tab[i]>tab[i_max])
+        i_max=i;
+
+return i_max;
+
+}
+
+void afficher_tableau(int tab[],int len)
+{
+    for(int i=0;i<len;++i)
+        printf("%d ",tab[i]);
+
+printf("\n");
+}
+
+int* tableau_alea(int len ,int m){
+int* tab= (int*)(malloc(sizeof(*tab)*len));
+for(int i=0;i<len;++i)
+    tab[i]=0;
+for(int i=0;i<len;++i)
+    tab[i]= rand()% m;
+return tab;;
+}
+
+//EXERCICE 3
+
+
+bool premier(int n){
+
+if (n<2) return false;
+
+bool b = true;
+
+int i=2;
+
+while(i*i<=n && b){
+    b = n%i!=0;
+    i=i+1;
+}
+
+return b&& i*i>n;
+
+}
+
+bool c_premier (int n){
+if (n<2) return false;
+
+int d=2;
+
+while(d*d<=n){
+    if(n%d==0){return false;}
+    d++;
+}
+
+return true;
+
+}
+
+
+int* crible(int n,int*len){
+
+bool*premier = (bool*)(malloc(sizeof(*premier)*(n+1)));
+
+*len=0;// pas besoin d'une varible count
+
+premier[0]=false;premier[1]=false;
+
+for(int i =2;i<=n;++i) premier[i]=true;
+
+int i=2;
+
+while(i<=n){
+    if (premier[i])
+    {
+        ++(*len);
+        int c=2*i;
+        while(c<=n){premier[c]=false;c=c+i;}
+    }
+    i++;
+}
+int* tab = (int*)(malloc(sizeof(int*)*(*len)));
+int j=0;
+for(int i =0;i<=n;++i)
+    if (premier[i]) {tab [j]=i;j++;}
+
+free(premier);
+
+return tab;
+}
+
+// EXERCICE 4
+
+void tri_selection(int tab[], int len){
+assert(len >0);
+
+for(int i=0;i<len-1;++i){
+ int i_min=i;
+ for(int j=i+1;j<len;++j)
+    if(tab[j]<tab[i_min]){i_min=j;}
+ int x =tab[i_min];
+ tab[i_min]=tab[i];
+ tab[i]=x;
+}
+}
+
+
+bool appartient (int x,int tab[],int len){
+assert(len>0);
+for(int i=0;i<len;i++) if(tab[i]==x) return true;
+return false;
+}
+
+bool dichotomie (int x,int tab[],int len){
+
+if (len ==0) return false;
+
+int k = len/2;
+
+if(tab[k]==x)
+    return true;
+else
+    if (tab[k]>x)
+        dichotomie(x,tab,k);
+    else
+        return dichotomie(x,tab+k+1,len-k-1);
+
+}
+
+//EXERCICE 5
+
+struct Liste {
+int data;
+struct Liste* suivant;};
+typedef struct Liste list;
+
+list* creer_liste(int x){
+list* maillot = (list*)malloc(sizeof(*maillot));
+(*maillot).data = x;
+(*maillot).suivant = NULL;
+return maillot;
+}
+
+list* convertir_tab_ (int tab[],int len){
+assert(len>0);
+list* lst =creer_liste(tab[0]);
+list*l = lst;
+for(int i = 1;i<len;++i){
+
+    (*l).suivant = creer_liste(tab[i]);
+    l = (*l).suivant;
+}
+return lst;
+}
+
+list* convertir_tab(int tab[],int len)
+{
+list* lst = NULL;
+
+for(int i = len-1;i>=0;i=i-1){
+    list* l = creer_liste(tab[i]);
+    l->suivant = lst;
+    lst=l;
+}
+return lst;
+
+}
+
+void afficher_liste(list* lst){
+
+while(lst->suivant != NULL){printf("%d ",lst->data); lst = lst->suivant; };
+printf("%d",lst->data);
+
+}
+void liberer_liste(list* lst){if (lst != NULL){liberer_liste(lst->suivant);free(lst);}}
+
+struct File{
+list* premier;
+list* dernier;
+};
+
+typedef struct File file;
+
+file* creer(){
+
+file* q =  (file*)malloc(sizeof(*q));
+q->premier = NULL;
+q->dernier =NULL;
+}
+file* est_vide(file* f)
+{
+return (f->premier) ==NULL;
+};
+
+void liberer_file(file* f)
+{
+    if(f!= NULL){liberer_liste(f->premier);free(f);}
+}
+
+
+void enfilier(file*f,int x){
+
+list* maillot = creer_liste(x);
+if(est_vide(f)){f->premier = maillot;f->dernier=maillot;}
+else{f->dernier->suivant = maillot;f->dernier=maillot;}
+
+}
+
+void defiler(file* f){
+
+assert(!est_vide(f));
+int x = f->premier->data;
+list* l = f->premier;
+f->premier = l->suivant;
+
+if(est_vide(f))
+    f->dernier = NULL;
+free(l);
+return x;
+}
+
+
+//EXERCICE 6
+
+
+// ON N'AS PAS BESOIN
+int dicho_sup (int tab[],int len,int x){
+
+int m = len/2;
+
+if(x<=tab[m] && m==0)
+    return 0;
+if(x<=tab[m])
+    return dicho_sup(tab,m,x);
+if(x>tab[m] && m==len-1)
+    return len;
+if(x>tab[m])
+    return m+1 + dicho_sup(tab+m+1,len-m-1,x);
+
+}
+
+
+int inversion_DPR (int tab[],int n){
+if (n==0 || n==1 ) return 0;
+int m=n/2;
+
+int x = inversion_DPR(tab, m);
+int y = inversion_DPR(tab+m,n-m);
+
+
+int* tab0 =tab+m;
+
+int* t = (int*)(malloc(sizeof(*t)*n));
+
+
+int j=0;
+int i=0;
+int k=0;
+
+while(k<n){
+    while(tab[i]<tab0[j] && i<m){t[k]=tab[i];i++;k++;}
+    if(i==m){
+            for(int l=j;l<n-m,++l;++k)
+                t[k]=t[l];
+            }
+    else{
+
+      tab[k]=tab[j];
+        j++;k++;
+    }
+}
+int count = 0;
+for(int i=0;i<m;++i)
+{
+count+= dicho_sup(tab0,n-m,tab[i]);
+
+}
+for(int i = 0 ;i<n;++i) tab[i]=t[i];
+free(tab0);
+free(t);
+return x + y + count;
+}
+
+//SOLUTION
+
+int* fusion(int tab[],int g ,int m ,int d){
+
+int i= g; int j = m;
+int nbr_inversion = 0;
+int* aux = (int*)(malloc(sizeof(*aux)*(d-g)));
+
+
+for(int k=0 ; k<d-g;++k){
+    if(j==d || (i<m && tab[i]<=tab[j])){
+        aux[k]=tab[i];
+        i++;
+    }else{
+    aux[k]= tab[j];
+    j++;
+    nbr_inversion+=m-i;
+    }
+
+}
+for(int i = 0 ;i <d-g;++i)
+    tab[g+i]=aux[i];
+free(aux);
+return nbr_inversion;
+}
+
+int inversion_dbr_aux (int tab[],int g,int d){
+
+int m = (d-g)/2;
+if (m==0) return 0;
+
+int nbr1 = inversion_dbr_aux(tab,g,g + m);
+int nbr2 = inversion_dbr_aux(tab,g+m,d);
+int x = fusion(tab,g,g+m,d);
+return x +nbr1 + nbr2;
+
+}
+/*
+int inversions_DPR_aux(int tab[], int g, int d){
+    // On écrit cette fonction auxiliaire qui a des arguments différents pour faciliter
+    // les appels récursifs.
+    if (d > g + 1){
+        int m = (g + d) / 2;
+        int ng = inversions_DPR_aux(tab, g, m);
+        int nd = inversions_DPR_aux(tab, m, d);
+        int ngd = fusion(tab, g, m, d);
+        return ng + nd + ngd;
+    } else {
+        return 0;
+    }
+}
+*/
+
+int inversion_dbr (int tab[],int n){return inversion_dbr_aux(tab,0,n);}
+
+int inversion_naif (int tab[], int n){
+
+int count=0;
+
+for(int i=0;i <n-1;++i)
+    for(int j=i+1;j<n;++j)
+        if(tab[i]> tab[j])
+            count++;
+
+return count;
+}
+//EXERCICE 7
+struct Tab_dyna {
+
+int taille;
+int capacite;
+int* data;
+}; typedef struct Tab_dyna tab_dyna;
+
+tab_dyna* creer_tab_dyna(void){
+
+tab_dyna* tbd = (tab_dyna*)(malloc(sizeof(*tbd)));
+int* d =(int*)(malloc(sizeof(*d)));
+tbd->taille=0;
+tbd->capacite=1;
+tbd->data= d;
+
+return tbd;}
+
+
+void librere_tab_dyna(tab_dyna*td){
+if(td!=NULL){
+free(td->data);
+free(td);
+}
+}
+
+int evaluer(tab_dyna*td,int i){
+assert(i< (td->taille));
+return (td->data)[i];
+}
+
+void modifier{tab_dyna td,int i,int x}{
+assert(i<(td->taille));
+(td->data)[i]=x;
+}
+
+void redimensionner (tab_dyna* td, int capa){
+assert(td->taille <= capa);
+
+int*data = (int*)(malloc(sizeof(*data)*capa));
+for(int i=0;i<td->taille;++i) data[i]=(td->data)[i]
+free(td->data);
+td->data = data;
+}
+
+void ajouter (tab_dyna* td,int x){
+if(td->taille == td->capacite)
+    redimensionner(td,2*td->capacite);
+
+(td->data)[taille] =x;
+(td->taille)+=1;
+};
+
+int retirer(tab_dyna* td){
+assert(td->taille>0);
+(td->taille)--;
+int x = evaluer(td,td->taille);
+if(td->capacite>=2*td<-taille)
+    redimensionner(td, (td->capacite)/2)
+
+return x;
+}
+int main (void){
+
+//srand(time(0));
+//int*tab = tableau_alea (20,31);
+//afficher_tableau(tab,20);
+//printf("%f %f",somme(1),somme(2));
+/*int* len;
+int n = 5;
+len=&n;
+int* tab = crible(100,len);
+afficher_tableau(tab,n);*/
+//printf("%f %f ",c_somme(2),c_somme(3));
+//printf("%f %f",somme(2),somme(3));
+//printf("%d %d",c_seuil(5) ,c_seuil(8));
+//printf("%d %d %d", premier(5),premier(48),premier(7));
+/*int *test = tableau_alea(20,50);
+tri_selection(test,20);
+afficher_tableau(test,20);
+printf("%d %d %d %d %d",dichotomie(45,test,20),dichotomie(0,test,20),dichotomie(-1,test,20),dichotomie(46,test,20),dichotomie(4867,test,20));*/
+
+/*int * tab= tableau_alea(10,20);
+afficher_tableau(tab,10);
+list* lst_c = convertir_tab(tab,10);
+afficher_liste(lst_c);*/
+/*file* f =NULL;
+printf("%p",f->premier);*/
+
+int tab[10]={0};
+for(int i =0 ;i<10;++i) tab[i]=9-i;
+
+
+int d =inversion_dbr(tab,10);
+printf("%d ",d);
+return 0;}
